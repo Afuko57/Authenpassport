@@ -8,7 +8,7 @@ const initializePassportJWT = () => {
     new JwtStrategy(
       {
         jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-        secretOrKey: env, // Replace with your secret key
+        secretOrKey: process.env.SECRET_KEY,
       },
       async (jwtPayload, done) => {
         try {

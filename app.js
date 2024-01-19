@@ -5,6 +5,8 @@ const bodyParser = require('body-parser');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerOptions = require('./swaggerOptions');
+require('dotenv').config();
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -14,6 +16,21 @@ const initializePassport = require('./passport-config');
 initializePassport(passport);
 
 // Middleware
+app.use((req, res, next) => {
+  const token = req.headers.authorization;
+
+  if (token) {
+    jwt.verify(token, 'your-secret-key', (err, decoded) => {
+      if (err) {
+        return res.status(401).json({ message: 'Invalid token' });
+      }
+
+      passport.authenticate('jwt', { session: false })(req, res, next);
+    });
+  } else {
+    next();
+  }
+});
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(

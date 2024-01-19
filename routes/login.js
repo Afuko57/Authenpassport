@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
+const jwt = require('jsonwebtoken');
 
 
 const userModel = require('../Model/userModel');
@@ -35,7 +36,11 @@ const userModel = require('../Model/userModel');
  *                   // Define user properties here
  */
 router.post('/', passport.authenticate('local'), (req, res) => {
-  res.json({ message: 'Login successful', user: req.user });
+  const secretKey = process.env.SECRET_KEY;
+  const token = jwt.sign({ id: req.user.id }, secretKey, { expiresIn: '1h' });
+
+  res.json({ message: 'Login successful', user: req.user, token });
 });
+
 
 module.exports = router;
